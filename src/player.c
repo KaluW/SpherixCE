@@ -28,6 +28,9 @@ void updatePlayer(void)
 	uint8_t right_bound = TILEMAP_WIDTH;
 	uint8_t bottom_bound = TILEMAP_HEIGHT;
 
+	uint8_t center_x = TILEMAP_DRAW_WIDTH / 2;
+	uint8_t center_y = TILEMAP_DRAW_HEIGHT / 2;
+
 	uint8_t player_x = game.map_x + game.scroll_to_x;
 	uint8_t player_y = game.map_y + game.scroll_to_y;
 
@@ -35,19 +38,35 @@ void updatePlayer(void)
 	{
 		if (!isLegalMove(player_x - 1, player_y)) return;
 
+		// move the player instead of the map if tilemap drawn to its edge
 		if (game.map_x) {
-			game.map_x--;
+			// move the player instead of the map if the player isn't at the middle of the screen
+			if (game.scroll_to_x > center_x) {
+				game.scroll_to_x--;
+			}
+			else {
+				game.map_x--;
+			}
 		}
 		else if (game.scroll_to_x) {
 			game.scroll_to_x--;
 		}
+
+		return; // don't check multiple key inputs
 	}
-	else if (pressed_right)
+	
+	if (pressed_right)
 	{
 		if (!isLegalMove(player_x + 1, player_y)) return;
 
 		if (game.map_x + TILEMAP_DRAW_WIDTH < right_bound) {
-			game.map_x++;
+			if (game.scroll_to_x < center_x) {
+				game.scroll_to_x++;
+			}
+			else {
+				game.map_x++;
+			}
+				
 		}
 		else if (game.map_x + game.scroll_to_x < right_bound - 1) {
 			game.scroll_to_x++;
@@ -58,7 +77,13 @@ void updatePlayer(void)
 		if (!isLegalMove(player_x, player_y - 1)) return;
 
 		if (game.map_y) {
-			game.map_y--;
+			if (game.scroll_to_y > center_y) {
+				game.scroll_to_y--;
+			}
+			else {
+				game.map_y--;
+			}
+			
 		}
 		else if (game.scroll_to_y) {
 			game.scroll_to_y--;
@@ -69,7 +94,12 @@ void updatePlayer(void)
 		if (!isLegalMove(player_x, player_y + 1)) return;
 
 		if (game.map_y + TILEMAP_DRAW_HEIGHT < bottom_bound) {
-			game.map_y++;
+			if (game.scroll_to_y < center_y) {
+				game.scroll_to_y++;
+			}
+			else {
+				game.map_y++;
+			}
 		}
 		else if (game.map_y + game.scroll_to_y < bottom_bound - 1) {
 			game.scroll_to_y++;

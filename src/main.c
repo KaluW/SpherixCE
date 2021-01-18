@@ -82,7 +82,7 @@ void init_game(void)
 	tilemap.width = TILEMAP_WIDTH;
 	tilemap.height = TILEMAP_HEIGHT;
 	tilemap.y_loc = TILEMAP_DRAW_OFFSET_Y;
-	tilemap.x_loc = 0;
+	tilemap.x_loc = TILEMAP_DRAW_OFFSET_X;
 
 	game.map_x = 0;
 	game.map_y = 0;
@@ -91,11 +91,8 @@ void init_game(void)
 	game.scroll_to_y = 1;
 
 	gfx_FillScreen(1);
-	gfx_SetColor(1);
-	gfx_SetTextFGColor(0);
-	gfx_SetTextBGColor(1);
 
-	gfx_SetMonospaceFont(8);
+
 }
 
 void main(void)

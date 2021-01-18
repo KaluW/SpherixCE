@@ -3,8 +3,13 @@
 
 #include <graphx.h>
 
-#define TILE_COUNT 12
+#define GRAY_COLOR 0
+#define BLACK_COLOR 1
+#define WHITE_COLOR 2
 
+
+
+#define TILE_COUNT 12
 #define TILE_EMPTY 0
 
 void missing_appvars(void);
@@ -35,9 +40,10 @@ extern game_t game;
 #define TILEMAP_WIDTH 12
 #define TILEMAP_HEIGHT 9
 
-#define TILEMAP_DRAW_WIDTH 10
+#define TILEMAP_DRAW_WIDTH 9
 #define TILEMAP_DRAW_HEIGHT 7
 
-#define TILEMAP_DRAW_OFFSET_Y 16
+#define TILEMAP_DRAW_OFFSET_X 16
+#define TILEMAP_DRAW_OFFSET_Y 8
 
 #endif

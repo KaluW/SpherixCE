@@ -73,14 +73,28 @@ void extract_sprites(void)
 
 void updateMap(void)
 {
-	gfx_TransparentTilemap(&tilemap, game.map_x * TILE_WIDTH, game.map_y * TILE_HEIGHT);
-	gfx_FillRectangle(0, 0, 320, 16);
+	gfx_SetColor(1);
+
+	gfx_SetTextFGColor(0);
+	gfx_SetTextBGColor(1);
+
+	gfx_SetMonospaceFont(8);
+
+	gfx_TransparentTilemap_NoClip(&tilemap, game.map_x * TILE_WIDTH, game.map_y * TILE_HEIGHT);
+
+	gfx_FillRectangle_NoClip(0, 0, 320, 8); // Top
+	gfx_FillRectangle_NoClip(0, 232, 320, 8); // bottom
+	gfx_FillRectangle_NoClip(0, 0, 16, 240); // left 
+	gfx_FillRectangle_NoClip(304, 0, 16, 240); //right
+
+	/*
 	gfx_PrintStringXY("x offset:", 48, 4);
 	gfx_PrintUInt(game.map_x + game.scroll_to_x, 2);
 	gfx_PrintString(" y offset:");
 	gfx_PrintUInt(game.map_y + game.scroll_to_y, 2);
+	*/
 
-	uint16_t player_x = (game.scroll_to_x) * TILE_WIDTH;
+	uint16_t player_x = (game.scroll_to_x) * TILE_WIDTH + TILEMAP_DRAW_OFFSET_X;
 	uint8_t player_y = (game.scroll_to_y) * TILE_HEIGHT + TILEMAP_DRAW_OFFSET_Y;
 
 	gfx_TransparentSprite(spherix, player_x, player_y);
