@@ -6,7 +6,12 @@
 #include "player.h"
 
 gfx_sprite_t* tileset_tiles[TILE_COUNT];
+
 gfx_sprite_t* spherix;
+gfx_sprite_t* gem;
+gfx_sprite_t* key;
+gfx_sprite_t* x_mark;
+gfx_sprite_t* check_mark;
 
 void extract_tiles(void)
 {
@@ -40,30 +45,43 @@ void extract_tiles(void)
 	ti_CloseAll();
 }
 
-void extract_sprites(void) {
-	uint8_t slot;
+void extract_sprites(void)
+{
+    uint8_t slot;
 
-	ti_CloseAll();
-	slot = ti_Open("SpherixS", "r");
-	if (!slot)
-		missing_appvars();
+    ti_CloseAll();
+    slot = ti_Open("SpherixS", "r");
+    if (slot) {
+        uint8_t* spr_ptr = ti_GetDataPtr(slot);
 
-	uint8_t* spr_ptr = ti_GetDataPtr(slot);
-	spherix = (gfx_sprite_t*)spr_ptr;
+        spherix = (gfx_sprite_t*)spr_ptr;
+        spr_ptr += 1026;
+        gem = (gfx_sprite_t*)spr_ptr;
+        spr_ptr += 258;
+        key = (gfx_sprite_t*)spr_ptr;
+        spr_ptr += 258;
+        x_mark= (gfx_sprite_t*)spr_ptr;
+        spr_ptr += 258;
+        check_mark = (gfx_sprite_t*)spr_ptr;
+    }
+    else {
+        missing_appvars();
+    }
 
-	ti_CloseAll();
+    ti_CloseAll();
 }
 
 void updateMap(void)
 {
-	gfx_TransparentTilemap(&tilemap, player.x, player.y);
+	gfx_TransparentTilemap(&tilemap, game.map_x * TILE_WIDTH, game.map_y * TILE_HEIGHT);
 	gfx_FillRectangle(0, 0, 320, 16);
 	gfx_PrintStringXY("x offset:", 48, 4);
-<<<<<<< HEAD
 	gfx_PrintUInt(game.map_x + game.scroll_to_x, 2);
-=======
-	gfx_PrintUInt(player.x, 3);
->>>>>>> parent of 07aec4d... Implemented player movement
 	gfx_PrintString(" y offset:");
-	gfx_PrintUInt(player.y, 2);
+	gfx_PrintUInt(game.map_y + game.scroll_to_y, 2);
+
+	uint16_t player_x = (game.scroll_to_x) * TILE_WIDTH;
+	uint8_t player_y = (game.scroll_to_y) * TILE_HEIGHT + TILEMAP_DRAW_OFFSET_Y;
+
+	gfx_TransparentSprite(spherix, player_x, player_y);
 }

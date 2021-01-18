@@ -6,15 +6,19 @@
 #include "player.h"
 
 game_t game;
-player_t player;
 
 gfx_tilemap_t tilemap;
 unsigned char level_map[TILEMAP_WIDTH * TILEMAP_HEIGHT] = { 
-
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 0, 0, 1, 0, 0, 1, 6, 2, 3, 0, 1,
+	1, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 1,
+	1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 1,
+	1, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 }; 
-
-
-
 
 void missing_appvars(void)
 {
@@ -77,11 +81,14 @@ void init_game(void)
 	tilemap.draw_width = TILEMAP_DRAW_WIDTH;
 	tilemap.width = TILEMAP_WIDTH;
 	tilemap.height = TILEMAP_HEIGHT;
-	tilemap.y_loc = 16;
+	tilemap.y_loc = TILEMAP_DRAW_OFFSET_Y;
 	tilemap.x_loc = 0;
 
-	player.x = 0;
-	player.y = 0;
+	game.map_x = 0;
+	game.map_y = 0;
+
+	game.scroll_to_x = 1;
+	game.scroll_to_y = 1;
 
 	gfx_FillScreen(1);
 	gfx_SetColor(1);
@@ -90,6 +97,7 @@ void init_game(void)
 
 	gfx_SetMonospaceFont(8);
 }
+
 void main(void)
 {
 	srand(rtc_Time());

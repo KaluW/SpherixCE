@@ -16,11 +16,16 @@
 #define BUTTON_TILE 8
 #define UP_LADDER_TILE 9
 #define DOWN_LADDER_TILE 10
-#define CHEST 11
+#define CHEST_TILE 11
 
 
 extern gfx_sprite_t* tileset_tiles[TILE_COUNT];
+
 extern gfx_sprite_t* spherix;
+extern gfx_sprite_t* gem;
+extern gfx_sprite_t* key;
+extern gfx_sprite_t* x_mark;
+extern gfx_sprite_t* check_mark;
 
 void extract_tiles(void);
 void extract_sprites(void);

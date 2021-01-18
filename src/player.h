@@ -5,6 +5,7 @@
 #include <tice.h>
 
 void updatePlayer(void);
+bool isLegalMove(uint8_t x, uint8_t y);
 
 extern bool pressed_f1;
 extern bool pressed_f2;
@@ -20,12 +21,5 @@ extern bool pressed_up;
 
 extern bool allow_up_press;
 
-typedef struct
-{
-	int x;
-	int y;
-} player_t;
-
-extern player_t player;
 
 #endif

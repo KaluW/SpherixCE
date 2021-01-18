@@ -1,5 +1,5 @@
 #include "defines.h"
-#include "player.h"
+#include "graphics.h"
 
 bool pressed_f1 = false;
 bool pressed_f2 = false;
@@ -17,23 +17,62 @@ bool pressed_up = false;
 
 bool allow_up_press = true;
 
+bool isLegalMove(uint8_t x, uint8_t y) {
+
+	return (*gfx_TilePtrMapped(&tilemap, x, y) == FLOOR_TILE);
+
+}
 
 void updatePlayer(void)
 {
-	uint8_t move = TILE_WIDTH;
+	uint8_t right_bound = TILEMAP_WIDTH;
+	uint8_t bottom_bound = TILEMAP_HEIGHT;
+
+	uint8_t player_x = game.map_x + game.scroll_to_x;
+	uint8_t player_y = game.map_y + game.scroll_to_y;
+
 	if (pressed_left)
-		if (player.x)
-			player.x -= move;
+	{
+		if (!isLegalMove(player_x - 1, player_y)) return;
 
-	if (pressed_right)
-		if (player.x < (TILEMAP_WIDTH * TILE_WIDTH) - (TILEMAP_DRAW_WIDTH * TILE_WIDTH))
-			player.x += move;
+		if (game.map_x) {
+			game.map_x--;
+		}
+		else if (game.scroll_to_x) {
+			game.scroll_to_x--;
+		}
+	}
+	else if (pressed_right)
+	{
+		if (!isLegalMove(player_x + 1, player_y)) return;
 
-	if (pressed_up)
-		if (player.y)
-			player.y -= move;
+		if (game.map_x + TILEMAP_DRAW_WIDTH < right_bound) {
+			game.map_x++;
+		}
+		else if (game.map_x + game.scroll_to_x < right_bound - 1) {
+			game.scroll_to_x++;
+		}
+	}
+	else if (pressed_up)
+	{
+		if (!isLegalMove(player_x, player_y - 1)) return;
 
-	if (pressed_down)
-		if (player.y < (TILEMAP_HEIGHT * TILE_HEIGHT) - (TILEMAP_DRAW_HEIGHT * TILE_HEIGHT))
-			player.y += move;
+		if (game.map_y) {
+			game.map_y--;
+		}
+		else if (game.scroll_to_y) {
+			game.scroll_to_y--;
+		}
+	}
+	else if (pressed_down)
+	{
+		if (!isLegalMove(player_x, player_y + 1)) return;
+
+		if (game.map_y + TILEMAP_DRAW_HEIGHT < bottom_bound) {
+			game.map_y++;
+		}
+		else if (game.map_y + game.scroll_to_y < bottom_bound - 1) {
+			game.scroll_to_y++;
+		}
+	}
 }
