@@ -1,0 +1,38 @@
+palettes:
+  - name: palette
+    fixed-entries:
+      - color: { index: 0, r: 255, g: 255, b: 255 }
+    images: automatic
+
+converts:
+  - name: tileset
+    palette: palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 32
+      tile-height: 32
+      pointer-table: false
+      images:
+        - tileset v1.0.png
+  - name: sprites
+    palette: palette
+    transparent-color-index: 0
+    images:
+      - Spherix.png
+
+outputs:
+  - type: appvar
+    name: SpherixT
+    source-format: none
+    output-first: palettes
+    prepend-palette-sizes: true
+    converts:
+      - tileset
+    palettes:
+      - palette
+      
+  - type: appvar
+    name: SpherixS
+    source-format: none
+    converts:
+      - sprites
