@@ -1,9 +1,10 @@
 #include <graphx.h>
 #include <fileioc.h>
 
+#include "game.h"
 #include "graphics.h"
 #include "defines.h"
-#include "player.h"
+#include "game.h"
 
 gfx_sprite_t* tileset_tiles[TILE_COUNT];
 
@@ -73,29 +74,36 @@ void extract_sprites(void)
 
 void updateMap(void)
 {
-	gfx_SetColor(1);
-
-	gfx_SetTextFGColor(0);
-	gfx_SetTextBGColor(1);
-
-	gfx_SetMonospaceFont(8);
-
 	gfx_TransparentTilemap_NoClip(&tilemap, game.map_x * TILE_WIDTH, game.map_y * TILE_HEIGHT);
+
+	gfx_SetColor(BLACK_COLOR);
 
 	gfx_FillRectangle_NoClip(0, 0, 320, 8); // Top
 	gfx_FillRectangle_NoClip(0, 232, 320, 8); // bottom
-	gfx_FillRectangle_NoClip(0, 0, 16, 240); // left 
-	gfx_FillRectangle_NoClip(304, 0, 16, 240); //right
+	gfx_FillRectangle_NoClip(0, 0, 24, 240); // left 
+	gfx_FillRectangle_NoClip(312, 0, 8, 240); //right
 
-	/*
-	gfx_PrintStringXY("x offset:", 48, 4);
-	gfx_PrintUInt(game.map_x + game.scroll_to_x, 2);
-	gfx_PrintString(" y offset:");
-	gfx_PrintUInt(game.map_y + game.scroll_to_y, 2);
-	*/
+	gfx_SetTextFGColor(GRAY_COLOR);
+	gfx_SetTextBGColor(BLACK_COLOR);
+	
+	gfx_TransparentSprite_NoClip(key, 4, 16);
+	gfx_SetTextXY(4, 36);
+	gfx_PrintUInt(game.keys, 1);
+
+	gfx_SetColor(WHITE_COLOR);
+	gfx_HorizLine_NoClip(4, 52, 16);
+
+	gfx_TransparentSprite_NoClip(gem, 4, 56);
+	if (!game.hasGem) {
+		gfx_TransparentSprite_NoClip(x_mark, 4, 76);
+	}
+	else {
+		gfx_TransparentSprite_NoClip(check_mark, 4, 76);
+	}
+	
 
 	uint16_t player_x = (game.scroll_to_x) * TILE_WIDTH + TILEMAP_DRAW_OFFSET_X;
 	uint8_t player_y = (game.scroll_to_y) * TILE_HEIGHT + TILEMAP_DRAW_OFFSET_Y;
 
-	gfx_TransparentSprite(spherix, player_x, player_y);
+	gfx_TransparentSprite_NoClip(spherix, player_x, player_y);
 }

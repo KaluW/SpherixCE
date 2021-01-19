@@ -1,24 +1,14 @@
 #include <graphx.h>
 #include <keypadc.h>
 
+#include "data.h"
 #include "defines.h"
+#include "game.h"
 #include "graphics.h"
-#include "player.h"
 
 game_t game;
 
 gfx_tilemap_t tilemap;
-unsigned char level_map[TILEMAP_WIDTH * TILEMAP_HEIGHT] = { 
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 0, 0, 1, 0, 0, 1, 6, 2, 3, 0, 1,
-	1, 0, 0, 0, 0, 0, 1, 2, 2, 0, 0, 1,
-	1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 1,
-	1, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-}; 
 
 void missing_appvars(void)
 {
@@ -31,8 +21,6 @@ void missing_appvars(void)
 
 void handle_keypad(void)
 {
-
-	bool press_up;
 	kb_key_t g1_key, g2_key, g6_key, g7_key;
 
 	kb_Scan();
@@ -43,27 +31,13 @@ void handle_keypad(void)
 	g6_key = kb_Data[6];
 	g7_key = kb_Data[7];
 
-	pressed_f1 = (g1_key & kb_Yequ);
-	pressed_f2 = (g1_key & kb_Window);
-	pressed_f3 = (g1_key & kb_Zoom);
-	pressed_f4 = (g1_key & kb_Trace);
-	pressed_f5 = (g1_key & kb_Graph);
-
 	pressed_2nd = (g1_key & kb_2nd);
 	pressed_Alpha = (g2_key & kb_Alpha);
 
 	pressed_down = (g7_key & kb_Down);
 	pressed_left = (g7_key & kb_Left);
 	pressed_right = (g7_key & kb_Right);
-	press_up = (g7_key & kb_Up);
-
-	// establishing the existence of gravity
-	if (allow_up_press) {
-		pressed_up = press_up;
-	}
-	else if (!press_up) {
-		allow_up_press = true;
-	}
+	pressed_up = (g7_key & kb_Up);
 
 	if (g6_key & kb_Clear)
 		game.exit = true;
@@ -71,6 +45,7 @@ void handle_keypad(void)
 
 void init_game(void)
 {
+	create_tilemap();
 	tilemap.map = level_map;
 	tilemap.tiles = tileset_tiles;
 	tilemap.type_width = gfx_tile_32_pixel;
@@ -89,10 +64,13 @@ void init_game(void)
 
 	game.scroll_to_x = 1;
 	game.scroll_to_y = 1;
+	
+	game.playerFacing = down;
+
+	game.keys = 0;
+	game.hasGem = false;
 
 	gfx_FillScreen(1);
-
-
 }
 
 void main(void)

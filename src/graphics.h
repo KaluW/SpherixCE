@@ -18,7 +18,6 @@
 #define DOWN_LADDER_TILE 10
 #define CHEST_TILE 11
 
-
 extern gfx_sprite_t* tileset_tiles[TILE_COUNT];
 
 extern gfx_sprite_t* spherix;
