@@ -30,6 +30,7 @@ void handle_2nd_press(uint8_t x, uint8_t y)
 	{
 		gfx_SetTileMapped(&tilemap, test_x, test_y, BOULDER_TILE);
 		data_map[test_y * TILEMAP_WIDTH + test_x] = boulder;
+		game.keys--;
 		return;
 	}
 
@@ -38,6 +39,7 @@ void handle_2nd_press(uint8_t x, uint8_t y)
 		gfx_SetTileMapped(&tilemap, test_x, test_y, FLOOR_TILE);
 		data_map[test_y * TILEMAP_WIDTH + test_x] = floor;
 		game.hasGem = true;
+		game.keys--;
 		return;
 	}
 
@@ -45,7 +47,6 @@ void handle_2nd_press(uint8_t x, uint8_t y)
 	{
 		gfx_SetTileMapped(&tilemap, test_x, test_y, FLOOR_TILE);
 		data_map[test_y * TILEMAP_WIDTH + test_x] = floor;
-		game.keys++;
 		return;
 	}
 

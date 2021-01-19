@@ -1,6 +1,9 @@
 # Spherix
 SpherixCE is a puzzle game programmed from scratch in C using the CE development toolchain.
 
+## Gameplay
+![Screenshot](https://raw.githubusercontent.com/kaluw/spherixce/master/extra/gameplay.gif)
+
 ## Build
 To build SpherixCE, make sure to have the latest [CE C Toolchain](https://github.com/CE-Programming/toolchain/releases/latest) installed.
 
@@ -25,3 +28,6 @@ From the homescreen of the calculator, run ```Asm(prgmSPHERIX)```.
    `arrow keys`: move player
    
    `[clear]`: exit program
+   
+## Help
+If you have issues building the program or find bugs in the code, feel free to submit your issue [here](https://www.cemetech.net/forum/viewtopic.php?p=290460#290460). Otherwise open a new issue in this repository.
