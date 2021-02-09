@@ -4,6 +4,7 @@
 
 #include "defines.h"
 #include "images.h"
+#include "graphics.h"
 #include "levels.h"
 #include "player.h"
 #include "tile_handlers.h"
@@ -42,10 +43,8 @@ void main(void)
 
         handle_tile_events();
 
-        draw_background();
+        draw_background(frametime);
         update_graphics();
-
-        display_fps(frametime);
 
         gfx_SwapDraw();
 
@@ -59,15 +58,6 @@ void main(void)
     free(tilemap.map);
 
     gfx_End();
-}
-
-void display_fps(uint16_t frametime)
-{
-    gfx_SetTextBGColor(BLACK_COLOR);
-    gfx_SetTextFGColor(WHITE_COLOR);
-
-    gfx_SetTextXY(1, 1);
-    gfx_PrintUInt(32768 / frametime, 2);
 }
 
 // function prototype in defines.h

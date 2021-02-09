@@ -26,6 +26,7 @@ converts:
       - key
       - x
       - check
+      - down_arrow
 
 outputs:
   - type: appvar

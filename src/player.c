@@ -7,17 +7,25 @@
 
 void handle_keypad(void)
 {
+    keypad_t* keypad = &player.keypad;
+
+    keypad->prev_press = keypad->dir_press;
+
     kb_Scan();
 
-    player.keypad.dir_press = kb_Data[7]; // directions offset - up, down, left, right
+    keypad->dir_press = kb_Data[7]; // directions offset - up, down, left, right
 
-    player.keypad.pressed_2nd = (kb_Data[1] & kb_2nd);
-    player.keypad.pressed_Alpha = (kb_Data[2] & kb_Alpha);
-    player.keypad.pressed_Clear = (kb_Data[6] & kb_Clear); // exit
+    keypad->allow_press = (keypad->dir_press && !keypad->prev_press) ? true : false;
+
+    keypad->pressed_2nd = (kb_Data[1] & kb_2nd);
+    keypad->pressed_Alpha = (kb_Data[2] & kb_Alpha);
+    keypad->pressed_Clear = (kb_Data[6] & kb_Clear); // exit
 }
 
 void update_player(void)
 {
+    if(!player.keypad.allow_press) return;
+
     uint8_t* map_x = &game.mapPos.x;
     uint8_t* map_y = &game.mapPos.y;
 

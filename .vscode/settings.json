@@ -9,6 +9,7 @@
         "levels.h": "c",
         "tile_handlers.h": "c",
         "fileioc.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "graphics.h": "c"
     }
 }

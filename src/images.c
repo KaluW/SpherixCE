@@ -16,6 +16,8 @@ gfx_rletsprite_t* sprite_key;
 gfx_rletsprite_t* sprite_x_mark;
 gfx_rletsprite_t* sprite_check;
 
+gfx_rletsprite_t* sprite_arrows[4];
+
 void extract_sprites(void)
 {
     uint8_t slot;
@@ -26,6 +28,7 @@ void extract_sprites(void)
         handle_error("Missing Appvars");
     
     uint8_t* spr_ptr = ti_GetDataPtr(slot);
+    gfx_TempSprite(spr_ptr0, 32, 32);
 
     sprite_spherix = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
     spr_ptr += 1026;
@@ -36,6 +39,17 @@ void extract_sprites(void)
     sprite_x_mark = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
     spr_ptr += 258;
     sprite_check = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
+    spr_ptr += 258;
+    sprite_arrows[down] = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
+
+    gfx_RotateSpriteCC((gfx_sprite_t*)spr_ptr, spr_ptr0);
+    sprite_arrows[right] = gfx_ConvertMallocRLETSprite(spr_ptr0);
+
+    gfx_FlipSpriteX((gfx_sprite_t*)spr_ptr, spr_ptr0);
+    sprite_arrows[up] = gfx_ConvertMallocRLETSprite(spr_ptr0);
+
+    gfx_RotateSpriteC((gfx_sprite_t*)spr_ptr, spr_ptr0);
+    sprite_arrows[left] = gfx_ConvertMallocRLETSprite(spr_ptr0);
 
     ti_CloseAll();
 }
@@ -70,47 +84,4 @@ void extract_tiles(void)
 
     // close the open file
     ti_CloseAll();
-}
-
-void update_graphics(void)
-{
-    uint16_t mapDrawX = game.mapPos.x * TILE_WIDTH;
-    uint8_t mapDrawY = game.mapPos.y * TILE_HEIGHT;
-
-    uint16_t playerDrawX = TILE_WIDTH * (player.pos.x - game.mapPos.x) + TILEMAP_START_DRAW_X;
-    uint8_t playerDrawY = TILE_HEIGHT * (player.pos.y - game.mapPos.y) + TILEMAP_START_DRAW_Y;
-
-    gfx_Tilemap_NoClip(&tilemap, mapDrawX, mapDrawY);
-    gfx_RLETSprite_NoClip(sprite_spherix, playerDrawX, playerDrawY);
-}
-
-void draw_background(void)
-{
-    gfx_SetColor(BLACK_COLOR);
-
-    // Black borders around tilemap
-    gfx_FillRectangle_NoClip(0, 0, 320, 8); 
-    gfx_FillRectangle_NoClip(0, 232, 320, 8);
-    gfx_FillRectangle_NoClip(0, 0, 24, 240);
-    gfx_FillRectangle_NoClip(312, 0, 8, 240);
-
-    // Display objects in background
-
-    gfx_SetTextFGColor(TRANSPARENT_GRAY);
-	gfx_SetTextBGColor(BLACK_COLOR);
-	
-	gfx_RLETSprite_NoClip(sprite_key, 4, 16);
-	gfx_SetTextXY(4, 36);
-	gfx_PrintUInt(game.numKeys, 1);
-
-	gfx_SetColor(WHITE_COLOR);
-	gfx_HorizLine_NoClip(4, 52, 16);
-
-	gfx_RLETSprite_NoClip(sprite_gem, 4, 56);
-	if (!game.hasEndGem) {
-		gfx_RLETSprite_NoClip(sprite_x_mark, 4, 76);
-	}
-	else {
-		gfx_RLETSprite_NoClip(sprite_check, 4, 76);
-	}
 }

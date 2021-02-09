@@ -46,11 +46,11 @@
 
 tiles_t enum_map_1[12 * 9] = {
     wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal,
-    wal, flr, flr, wal, flr, flr, fW1, enG, h2o, flr, flr, wal,
-    wal, flr, flr, flr, flr, flr, wal, h2o, h2o, flr, flr, wal,
+    wal, flr, flr, wal, flr, flr, fW1, key, flr, flr, flr, wal,
+    wal, flr, flr, flr, flr, flr, wal, flr, flr, flr, flr, wal,
     wal, wal, wal, wal, flr, flr, flr, flr, flr, flr, flr, wal,
     wal, flr, flr, flr, flr, flr, flr, flr, flr, flr, flr, wal,
-    wal, flr, cBl, flr, flr, flr, flr, flr, flr, flr, flr, wal,
+    wal, flr, ceG, flr, flr, flr, flr, flr, flr, flr, flr, wal,
     wal, flr, flr, flr, flr, flr, flr, flr, flr, flr, flr, wal,
     wal, flr, flr, flr, flr, flr, flr, flr, flr, flr, enP, wal,
     wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal,
@@ -151,7 +151,7 @@ void extract_level(void)
     player.pos.x = level.player_start.x;
     player.pos.y = level.player_start.y;
 
-    game.numKeys = 1;
+    game.numKeys = 0;
     game.hasEndGem = false;
 }
 

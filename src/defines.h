@@ -19,6 +19,9 @@
  * begin with "tiles_", or end with "_tile" or with "_sptile" depending on its function.
  */
 
+#define gfx_PrintUIntXY(i,length,x,y) gfx_SetTextXY(x,y);\
+gfx_PrintUInt(i,length)
+
 // In main
 void handle_error(const char* msg);
 
@@ -106,6 +109,8 @@ typedef enum Tiles
 typedef struct Keypad
 {
     kb_key_t dir_press;
+    kb_key_t prev_press;
+    bool allow_press;
 
     bool pressed_2nd;
     bool pressed_Alpha;
@@ -114,7 +119,6 @@ typedef struct Keypad
 
 typedef enum Directions
 {
-    none,
     up,
     down,
     left,

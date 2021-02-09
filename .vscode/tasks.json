@@ -11,7 +11,7 @@
             "options": {
                 "cwd": "${workspaceFolder}/",
                 "env": {
-                    "Path" : "{CEDEV}/include"
+                    "Path" : "C:\\CEDEV\\bin"
                 }
             },
             
