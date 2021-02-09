@@ -29,7 +29,7 @@ typedef struct Player
 } player_t;
 
 void handle_keypad(keypad_t* keypad);
-void updatePlayer(game_t* game, player_t* player);
+void update_player(game_t* game, player_t* player);
 bool isLegalMove(player_t* player, game_t* game);
 
 #endif

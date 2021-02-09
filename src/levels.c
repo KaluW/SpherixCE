@@ -45,10 +45,10 @@
 
 tiles_t enum_map_1[12 * 9] = {
     wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal,
-    wal, flr, flr, wal, flr, flr, fW1, enG, hol, flr, flr, wal,
-    wal, flr, flr, flr, flr, flr, wal, hol, hol, flr, flr, wal,
+    wal, flr, flr, wal, flr, flr, fW1, enG, h2o, flr, flr, wal,
+    wal, flr, flr, flr, flr, flr, wal, h2o, h2o, flr, flr, wal,
     wal, wal, wal, wal, flr, flr, flr, flr, flr, flr, flr, wal,
-    wal, flr, flr, flr, flr, flr, sB1, flr, flr, flr, flr, wal,
+    wal, flr, flr, flr, flr, flr, flr, flr, flr, flr, flr, wal,
     wal, flr, cBl, flr, flr, flr, flr, flr, flr, flr, flr, wal,
     wal, flr, flr, flr, flr, flr, flr, flr, flr, flr, flr, wal,
     wal, flr, flr, flr, flr, flr, flr, flr, flr, flr, enP, wal,
@@ -57,8 +57,8 @@ tiles_t enum_map_1[12 * 9] = {
 
 void create_levels(void)
 {
-	ti_CloseAll();
-	uint8_t slot = ti_Open("SpherixL", "w");
+    ti_CloseAll();
+    uint8_t slot = ti_Open("SpherixL", "w");
 
     // currently only one level. level_t array should work with multiple levels
     level_t levels = {
@@ -144,8 +144,8 @@ void extract_level(player_t* player, game_t* game)
     }
 
     // starting values
-    game->map_pos.x = level.map_start.x;
-    game->map_pos.y = level.map_start.y;
+    game->mapPos.x = level.map_start.x;
+    game->mapPos.y = level.map_start.y;
 
     player->pos.x = level.player_start.x;
     player->pos.y = level.player_start.y;

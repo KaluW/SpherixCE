@@ -54,24 +54,32 @@ void handle_boulder(player_t player, game_t* game)
     uint8_t curr_x_pos = _test_pos_x(player.pos.x, player.facing);
     uint8_t curr_y_pos = _test_pos_y(player.pos.y, player.facing);
 
+    // test boulder pos
     uint8_t test_x_pos = _test_pos_x(curr_x_pos, player.facing);
     uint8_t test_y_pos = _test_pos_y(curr_y_pos, player.facing);
 
+    // Readability :)
     uint16_t index = curr_y_pos * game->tile_map.width + curr_x_pos;
     uint16_t test_index = test_y_pos * game->tile_map.width + test_x_pos;
-
     tiles_t* curr_tile = &game->enum_map[index];
     tiles_t* test_tile = &game->enum_map[test_index];
     
-    if(*test_tile == floor_tile)
+    switch(*test_tile)
     {
-        // move boulder to new position
-        gfx_SetTileMapped(&game->tile_map, test_x_pos, test_y_pos, TILE_BOULDER);
-        *test_tile  = boulder_tile;
+        case floor_tile:
+            // move boulder to new position
+            gfx_SetTileMapped(&game->tile_map, test_x_pos, test_y_pos, TILE_BOULDER);
+            *test_tile  = boulder_tile;
+            
+        case hole_tile:
+            // replace old tile with floor
+            gfx_SetTileMapped(&game->tile_map, curr_x_pos, curr_y_pos, TILE_FLOOR);
+            *curr_tile = floor_tile;
 
-        // replace old tile with floor
-        gfx_SetTileMapped(&game->tile_map, curr_x_pos, curr_y_pos, TILE_FLOOR);
-        *curr_tile = floor_tile;
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -90,11 +98,11 @@ void handle_chest(player_t player, game_t* game)
     if(*tile == tiles_chest_boulder)
     {
         gfx_SetTileMapped(&game->tile_map, x_pos, y_pos, TILE_BOULDER);
-		*tile = boulder_tile;
-		
+        *tile = boulder_tile;
+        
         game->numKeys--;
 
-		return;
+        return;
     }
 }
 

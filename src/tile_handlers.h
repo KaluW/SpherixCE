@@ -16,5 +16,4 @@ void handle_chest(player_t player, game_t* game);
 void handle_endGem(game_t* game);
 void handle_key(game_t* game);
 
-
 #endif

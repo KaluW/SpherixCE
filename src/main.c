@@ -8,16 +8,18 @@
 #include "player.h"
 #include "tile_handlers.h"
 
+void display_fps(uint16_t frametime);
 void setup_tilemap(gfx_tilemap_t* tilemap, gfx_sprite_t** tileset_tiles);
 
 void main(void)
 {
+    uint16_t frametime = 0;
+
     gfx_Begin();
 
-    // No globals :D
     player_t player;
     game_t game;
-    gfx_sprite_t* sprites[SPRITE_COUNT];
+    gfx_rletsprite_t* sprites[SPRITE_COUNT];
     gfx_sprite_t* tileset_tiles[TILE_COUNT];
 
     // set up some stuff 
@@ -33,27 +35,42 @@ void main(void)
 
     gfx_SetDrawBuffer();
 
-    // main chungus
+    timer_Control = TIMER1_ENABLE | TIMER1_32K | TIMER1_UP;
+
+    // main
     do
     {
         handle_keypad(&player.keypad);
-        updatePlayer(&game, &player);
+        update_player(&game, &player);
 
         handle_tile_events(player, &game);
 
-        draw_background();
+        draw_background(game, sprites);
+        update_graphics(player, game, sprites);
 
-        gfx_TransparentTilemap_NoClip(&game.tile_map, game.map_pos.x * TILE_WIDTH, game.map_pos.y * TILE_HEIGHT);
-        
-        draw_sprites(player.pos, game.map_pos, sprites);
+        display_fps(frametime);
 
         gfx_SwapDraw();
+
+        if(FIXFPS) while(timer_1_Counter < FIXED_FPS);
+
+        frametime = timer_1_Counter;
+        timer_1_Counter = 0;
 
     } while(!player.keypad.pressed_Clear);
 
     free(game.tile_map.map);
 
     gfx_End();
+}
+
+void display_fps(uint16_t frametime)
+{
+    gfx_SetTextBGColor(BLACK_COLOR);
+    gfx_SetTextFGColor(WHITE_COLOR);
+
+    gfx_SetTextXY(1, 1);
+    gfx_PrintUInt(32768 / frametime, 2);
 }
 
 // function prototype in defines.h
@@ -77,13 +94,13 @@ void setup_tilemap(gfx_tilemap_t* tilemap, gfx_sprite_t** tileset_tiles)
 {
     tilemap->tiles = tileset_tiles;
     tilemap->type_width = gfx_tile_32_pixel;
-	tilemap->type_height = gfx_tile_32_pixel;
+    tilemap->type_height = gfx_tile_32_pixel;
     tilemap->tile_height = TILE_HEIGHT;
-	tilemap->tile_width = TILE_WIDTH;
+    tilemap->tile_width = TILE_WIDTH;
     tilemap->draw_height = TILEMAP_DRAW_HEIGHT;
-	tilemap->draw_width = TILEMAP_DRAW_WIDTH;
-	tilemap->y_loc = TILEMAP_START_DRAW_Y;
-	tilemap->x_loc = TILEMAP_START_DRAW_X;
+    tilemap->draw_width = TILEMAP_DRAW_WIDTH;
+    tilemap->y_loc = TILEMAP_START_DRAW_Y;
+    tilemap->x_loc = TILEMAP_START_DRAW_X;
 
     // initialize to make some things work properly
     tilemap->height = 0;
