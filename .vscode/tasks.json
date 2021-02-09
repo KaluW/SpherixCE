@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "make",
+            "type": "shell",
+            "command": "make",
+            "presentation": {
+                "reveal": "always"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/",
+                "env": {
+                    "Path" : "C:\\Users\\ricejx0682\\AppData\\Local\\Programs\\Git"
+                }
+            },
+            
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

@@ -7,7 +7,7 @@ SpherixCE is a puzzle game programmed from scratch in C using the CE development
 ## Build
 To build SpherixCE, make sure to have the latest [CE C Toolchain](https://github.com/CE-Programming/toolchain/releases/latest) installed.
 
-Then simply clone or download the repository from above, and run the following in command line:
+Then simply clone or download the repository from above, and run the following in the terminal:
 
     make gfx
     make
