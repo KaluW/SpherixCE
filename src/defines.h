@@ -1,10 +1,11 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#include <graphx.h>
+#include <keypadc.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <tice.h>
-#include <graphx.h>
 
 /**
  * Totally necessary explanations to excuse my poor code structuring
@@ -21,7 +22,7 @@
 // In main
 void handle_error(const char* msg);
 
-#define FIXED_FPS 32768 / 10
+#define fixed_fps(a) (32768 / a)
 #define FIXFPS true
 
 // Color defines
@@ -39,14 +40,6 @@ void handle_error(const char* msg);
 #define TILEMAP_START_DRAW_Y (LCD_HEIGHT - (TILE_HEIGHT * TILEMAP_DRAW_HEIGHT)) / 2
 
 #define TILE_COUNT 12
-#define SPRITE_COUNT 5
-
-// Sprite defines
-#define SPRITE_SPHERIX  0
-#define SPRITE_GEM      1
-#define SPRITE_KEY      2
-#define SPRITE_X_MARK   3
-#define SPRITE_CHECK    4
 
 // Tileset defines
 #define TILE_FLOOR 				0
@@ -110,6 +103,15 @@ typedef enum Tiles
 
 // A bunch of structs ↓↓↓
 
+typedef struct Keypad
+{
+    kb_key_t dir_press;
+
+    bool pressed_2nd;
+    bool pressed_Alpha;
+    bool pressed_Clear; // exit
+} keypad_t;
+
 typedef enum Directions
 {
     none,
@@ -119,37 +121,23 @@ typedef enum Directions
     right
 } directions_t;
 
-typedef struct Map
-{
-    uint8_t width, height;
-    tiles_t* enum_map;
-} map_t;
-
 typedef struct Pos
 {
     uint8_t x;
     uint8_t y;
 } pos_t;
 
-typedef struct Level
-{
-    map_t map;
-
-    pos_t player_start;
-    pos_t map_start;
-} level_t;
-
 typedef struct Game
 {
     uint8_t curr_level;
 
     tiles_t* enum_map;
-    gfx_tilemap_t tile_map;
 
     pos_t mapPos;
     
     uint8_t numKeys;
     bool hasEndGem;
 } game_t;
+extern game_t game;
 
 #endif

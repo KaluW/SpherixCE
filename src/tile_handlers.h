@@ -6,14 +6,14 @@
 
 #include "player.h"
 
-uint8_t _test_pos_x(uint8_t x, directions_t dir);
-uint8_t _test_pos_y(uint8_t y, directions_t dir);
+uint8_t _test_pos_x(uint8_t x);
+uint8_t _test_pos_y(uint8_t y);
 
-void handle_tile_events(player_t player, game_t* game);
+void handle_tile_events(void);
 
-void handle_boulder(player_t player, game_t* game);
-void handle_chest(player_t player, game_t* game);
-void handle_endGem(game_t* game);
-void handle_key(game_t* game);
+void handle_boulder(void);
+void handle_chest(void);
+void handle_endGem(void);
+void handle_key(void);
 
 #endif

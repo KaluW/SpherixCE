@@ -1,9 +1,10 @@
-#include <stdbool.h>
-#include <stdint.h>
 #include <fileioc.h>
 #include <graphx.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #include "defines.h"
+#include "images.h"
 #include "levels.h"
 #include "player.h"
 
@@ -62,9 +63,9 @@ void create_levels(void)
 
     // currently only one level. level_t array should work with multiple levels
     level_t levels = {
-        .map.width = 12,
-        .map.height = 9,
-        .map.enum_map = enum_map_1,
+        .width = 12,
+        .height = 9,
+        .enum_map = enum_map_1,
 
         .map_start.x = 0,
         .map_start.y = 0,
@@ -78,7 +79,7 @@ void create_levels(void)
     ti_CloseAll();
 }
 
-void extract_level(player_t* player, game_t* game)
+void extract_level(void)
 {
     level_t level;
 
@@ -93,18 +94,18 @@ void extract_level(player_t* player, game_t* game)
 
     ti_Read(&level, sizeof(level_t), 1, slot);
 
-    game->enum_map = level.map.enum_map;
+    game.enum_map = level.enum_map;
 
-    game->tile_map.width = level.map.width;
-    game->tile_map.height = level.map.height;
+    tilemap.width = level.width;
+    tilemap.height = level.height;
 
-    game->tile_map.map = malloc(level.map.width * level.map.height);
+    tilemap.map = malloc(level.width * level.height);
 
-    tiles_t* in = level.map.enum_map;
-    uint8_t* out = game->tile_map.map;
+    tiles_t* in = level.enum_map;
+    uint8_t* out = tilemap.map;
 
     // Extract the level data into a tilemap
-    for(uint8_t i = 0; i < level.map.width * level.map.height; i++)
+    for(uint8_t i = 0; i < level.width * level.height; i++)
     {
             if (*in == floor_tile)          { *out = TILE_FLOOR;        } else
             if (*in == wall_tile)           { *out = TILE_WALL;         } else
@@ -135,7 +136,7 @@ void extract_level(player_t* player, game_t* game)
                 *out = TILE_CHEST;
             } else
             {
-                free(game->tile_map.map);
+                free(tilemap.map);
                 handle_error("Invalid level data");
             }
 
@@ -144,13 +145,29 @@ void extract_level(player_t* player, game_t* game)
     }
 
     // starting values
-    game->mapPos.x = level.map_start.x;
-    game->mapPos.y = level.map_start.y;
+    game.mapPos.x = level.map_start.x;
+    game.mapPos.y = level.map_start.y;
 
-    player->pos.x = level.player_start.x;
-    player->pos.y = level.player_start.y;
+    player.pos.x = level.player_start.x;
+    player.pos.y = level.player_start.y;
 
-    // these are constant every level
-    game->numKeys = 1;
-    game->hasEndGem = false;
+    game.numKeys = 1;
+    game.hasEndGem = false;
+}
+
+void setup_tilemap(void)
+{
+    tilemap.tiles = tileset_tiles;
+    tilemap.type_width = gfx_tile_32_pixel;
+    tilemap.type_height = gfx_tile_32_pixel;
+    tilemap.tile_height = TILE_HEIGHT;
+    tilemap.tile_width = TILE_WIDTH;
+    tilemap.draw_height = TILEMAP_DRAW_HEIGHT;
+    tilemap.draw_width = TILEMAP_DRAW_WIDTH;
+    tilemap.y_loc = TILEMAP_START_DRAW_Y;
+    tilemap.x_loc = TILEMAP_START_DRAW_X;
+
+    // initialize to make some things work properly
+    tilemap.height = 0;
+    tilemap.width = 0;
 }

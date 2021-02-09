@@ -1,4 +1,5 @@
 bin/
 obj/
-src/.vs/
 src/gfx/*.8xv
+.vscode/
+src/.vscode/

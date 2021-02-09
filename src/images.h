@@ -6,10 +6,19 @@
 #include "defines.h"
 #include "player.h"
 
-void extract_sprites(gfx_rletsprite_t* sprites[SPRITE_COUNT]);
-void extract_tiles(gfx_sprite_t* tilest_tiles[TILE_COUNT]);
+extern gfx_tilemap_t tilemap;
+extern gfx_sprite_t *tileset_tiles[TILE_COUNT];
 
-void update_graphics(player_t player, game_t game, gfx_rletsprite_t* sprites[SPRITE_COUNT]);
-void draw_background(game_t game, gfx_rletsprite_t* sprites[SPRITE_COUNT]);
+gfx_rletsprite_t* sprite_spherix;
+gfx_rletsprite_t* sprite_gem;
+gfx_rletsprite_t* sprite_key;
+gfx_rletsprite_t* sprite_x_mark;
+gfx_rletsprite_t* sprite_check;
+
+void extract_sprites(void);
+void extract_tiles(void);
+
+void update_graphics(void);
+void draw_background(void);
 
 #endif

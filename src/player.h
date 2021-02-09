@@ -1,22 +1,11 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <stdint.h>
-#include <keypadc.h>
 #include <graphx.h>
+#include <keypadc.h>
+#include <stdint.h>
 
 #include "defines.h"
-
-typedef struct Keypad
-{
-    kb_key_t dir_press;
-
-    bool pressed_2nd;
-    bool pressed_Alpha;
-    bool pressed_Clear; // exit
-} keypad_t;
-
-void handle_keypad(keypad_t* keypad);
 
 typedef struct Player
 {
@@ -27,9 +16,11 @@ typedef struct Player
 
     keypad_t keypad;
 } player_t;
+extern player_t player;
 
-void handle_keypad(keypad_t* keypad);
-void update_player(game_t* game, player_t* player);
-bool isLegalMove(player_t* player, game_t* game);
+void handle_keypad(void);
+void handle_keypad(void);
+void update_player(void);
+bool isLegalMove(void);
 
 #endif

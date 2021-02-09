@@ -7,7 +7,16 @@
 #include "player.h"
 #include "tile_handlers.h"
 
-void extract_sprites(gfx_rletsprite_t* sprites[SPRITE_COUNT])
+gfx_tilemap_t tilemap;
+gfx_sprite_t *tileset_tiles[TILE_COUNT];
+
+gfx_rletsprite_t* sprite_spherix;
+gfx_rletsprite_t* sprite_gem;
+gfx_rletsprite_t* sprite_key;
+gfx_rletsprite_t* sprite_x_mark;
+gfx_rletsprite_t* sprite_check;
+
+void extract_sprites(void)
 {
     uint8_t slot;
 
@@ -18,20 +27,20 @@ void extract_sprites(gfx_rletsprite_t* sprites[SPRITE_COUNT])
     
     uint8_t* spr_ptr = ti_GetDataPtr(slot);
 
-    sprites[0] = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr); // spherix
+    sprite_spherix = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
     spr_ptr += 1026;
-    sprites[1] = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr); // gem
+    sprite_gem = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
     spr_ptr += 258;
-    sprites[2] = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr); // key
+    sprite_key = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
     spr_ptr += 258;
-    sprites[3] = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr); // x mark
+    sprite_x_mark = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
     spr_ptr += 258;
-    sprites[4] = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr); // check mark
+    sprite_check = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
 
     ti_CloseAll();
 }
 
-void extract_tiles(gfx_sprite_t* tileset_tiles[TILE_COUNT])
+void extract_tiles(void)
 {
     ti_CloseAll();
     uint8_t slot = ti_Open("SpherixT", "r");
@@ -63,7 +72,7 @@ void extract_tiles(gfx_sprite_t* tileset_tiles[TILE_COUNT])
     ti_CloseAll();
 }
 
-void update_graphics(player_t player, game_t game, gfx_rletsprite_t* sprites[SPRITE_COUNT])
+void update_graphics(void)
 {
     uint16_t mapDrawX = game.mapPos.x * TILE_WIDTH;
     uint8_t mapDrawY = game.mapPos.y * TILE_HEIGHT;
@@ -71,11 +80,11 @@ void update_graphics(player_t player, game_t game, gfx_rletsprite_t* sprites[SPR
     uint16_t playerDrawX = TILE_WIDTH * (player.pos.x - game.mapPos.x) + TILEMAP_START_DRAW_X;
     uint8_t playerDrawY = TILE_HEIGHT * (player.pos.y - game.mapPos.y) + TILEMAP_START_DRAW_Y;
 
-    gfx_TransparentTilemap_NoClip(&game.tile_map, mapDrawX, mapDrawY);
-    gfx_RLETSprite_NoClip(sprites[SPRITE_SPHERIX], playerDrawX, playerDrawY);
+    gfx_Tilemap_NoClip(&tilemap, mapDrawX, mapDrawY);
+    gfx_RLETSprite_NoClip(sprite_spherix, playerDrawX, playerDrawY);
 }
 
-void draw_background(game_t game, gfx_rletsprite_t* sprites[SPRITE_COUNT])
+void draw_background(void)
 {
     gfx_SetColor(BLACK_COLOR);
 
@@ -90,18 +99,18 @@ void draw_background(game_t game, gfx_rletsprite_t* sprites[SPRITE_COUNT])
     gfx_SetTextFGColor(TRANSPARENT_GRAY);
 	gfx_SetTextBGColor(BLACK_COLOR);
 	
-	gfx_RLETSprite_NoClip(sprites[SPRITE_KEY], 4, 16);
+	gfx_RLETSprite_NoClip(sprite_key, 4, 16);
 	gfx_SetTextXY(4, 36);
 	gfx_PrintUInt(game.numKeys, 1);
 
 	gfx_SetColor(WHITE_COLOR);
 	gfx_HorizLine_NoClip(4, 52, 16);
 
-	gfx_RLETSprite_NoClip(sprites[SPRITE_GEM], 4, 56);
+	gfx_RLETSprite_NoClip(sprite_gem, 4, 56);
 	if (!game.hasEndGem) {
-		gfx_RLETSprite_NoClip(sprites[SPRITE_X_MARK], 4, 76);
+		gfx_RLETSprite_NoClip(sprite_x_mark, 4, 76);
 	}
 	else {
-		gfx_RLETSprite_NoClip(sprites[SPRITE_CHECK], 4, 76);
+		gfx_RLETSprite_NoClip(sprite_check, 4, 76);
 	}
 }
