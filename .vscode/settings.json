@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "player.h": "c",
+        "graphx.h": "c",
+        "stdint.h": "c",
+        "tice.h": "c",
+        "defines.h": "c",
+        "images.h": "c",
+        "levels.h": "c",
+        "tile_handlers.h": "c",
+        "fileioc.h": "c",
+        "stdbool.h": "c"
+    }
+}

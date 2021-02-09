@@ -1,8 +1,8 @@
 #ifndef TILE_HANDLERS_H
 #define TILE_HANDLERS_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "player.h"
 
