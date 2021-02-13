@@ -8,6 +8,12 @@
 #include "levels.h"
 #include "player.h"
 
+uint16_t tilemap_draw_width_px;
+uint8_t tilemap_draw_height_px;
+
+static void extract_level_data(tiles_t* in, uint8_t* out);
+static void config_tilemap_globals(uint16_t draw_width, uint8_t draw_height);
+
 // These are short-hand names are so I can understand the level maps I create visually
 
 #define fW1 tiles_fake_wall_1
@@ -42,9 +48,10 @@
 #define enG endGem_tile
 #define blr boulder_tile
 
-// these globals don't count :P
+#define bow boulder_on_water_tile
+#define bob boulder_on_button_tile
 
-tiles_t enum_map_1[12 * 9] = {
+static tiles_t level_1[12 * 9] = {
     wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal,
     wal, flr, flr, wal, flr, flr, fW1, key, flr, flr, flr, wal,
     wal, flr, flr, flr, flr, flr, wal, flr, flr, flr, flr, wal,
@@ -56,25 +63,83 @@ tiles_t enum_map_1[12 * 9] = {
     wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal, wal,
 };
 
+static tiles_t level_2[13*17] = {
+    wal, wal, wal, wal, wal, wal, wal, hol, hol, hol, hol, hol, hol,
+    wal, key, flr, flr, flr, ceG, wal, hol, hol, hol, hol, hol, hol,
+    wal, flr, flr, flr, flr, flr, wal, hol, hol, hol, hol, hol, hol,
+    wal, flr, flr, flr, flr, flr, wal, hol, hol, hol, hol, hol, hol,
+    wal, flr, blr, blr, blr, flr, wal, hol, hol, hol, hol, hol, hol,
+    wal, blr, flr, flr, flr, blr, wal, hol, wal, wal, wal, wal, wal,
+    wal, flr, blr, cBl, blr, flr, wal, wal, wal, enP, flr, wal, wal,
+    wal, blr, blr, flr, blr, blr, wal, wal, wal, flr, flr, flr, wal,
+    hol, wal, flr, flr, flr, wal, wal, key, h2o, h2o, flr, flr, wal,
+    wal, wal, wal, flr, wal, hol, flr, flr, h2o, h2o, flr, flr, wal,
+    wal, flr, flr, flr, wal, blr, flr, blr, flr, cBl, flr, flr, wal,
+    wal, flr, wal, wal, wal, flr, blr, flr, blr, flr, h2o, h2o, wal,
+    wal, flr, wal, key, flr, flr, flr, blr, flr, blr, h2o, h2o, wal,
+    wal, flr, wal, flr, flr, flr, flr, flr, blr, flr, flr, wal, wal,
+    wal, flr, wal, wal, wal, wal, cBl, flr, flr, flr, flr, wal, hol,
+    wal, flr, key, flr, flr, flr, flr, wal, wal, wal, wal, wal, hol,
+    wal, wal, wal, wal, wal, wal, wal, wal, hol, hol, hol, hol, hol
+};
+
 void create_levels(void)
 {
     ti_CloseAll();
     uint8_t slot = ti_Open("SpherixL", "w");
 
-    // currently only one level. level_t array should work with multiple levels
-    level_t levels = {
-        .width = 12,
-        .height = 9,
-        .enum_map = enum_map_1,
+    uint8_t numLevels = 2;
 
-        .map_start.x = 0,
-        .map_start.y = 0,
+    level_t levels[2] = {
+        [0]= {
+            .width = 12,
+            .height = 9,
+            .enum_map = level_1,
 
-        .player_start.x = 1,
-        .player_start.y = 1
+            .map_start.x = 0,
+            .map_start.y = 0,
+
+            .player_start.x = 1,
+            .player_start.y = 1,
+
+            .draw_width = 9,
+            .draw_height = 7
+        },
+        [1]= {
+            .width = 13,
+            .height = 17,
+            .enum_map = level_2,
+
+            .map_start.x = 0,
+            .map_start.y = 0,
+
+            .player_start.x = 3,
+            .player_start.y = 2,
+
+            .draw_width = 9,
+            .draw_height = 7
+        }
     };
 
-    ti_Write(&levels, sizeof(level_t), 1, slot);
+    ti_PutC(numLevels, slot);
+    ti_Write(&levels[0], sizeof(level_t), 1, slot);
+    ti_Write(&levels[1], sizeof(level_t), 1, slot);
+
+    ti_CloseAll();
+}
+
+uint8_t get_num_levels(void)
+{
+    ti_CloseAll();
+    uint8_t slot = ti_Open("SpherixL", "r");
+    
+    if(!slot)
+    {
+        ti_CloseAll();
+        handle_error("Failed to load level");
+    }
+
+    return ti_GetC(slot);
 
     ti_CloseAll();
 }
@@ -92,6 +157,8 @@ void extract_level(void)
         handle_error("Failed to load level");
     }
 
+    ti_Seek(sizeof(level_t) * (game.curr_level - 1) + 1, SEEK_SET, slot);
+
     ti_Read(&level, sizeof(level_t), 1, slot);
 
     game.enum_map = level.enum_map;
@@ -105,44 +172,7 @@ void extract_level(void)
     uint8_t* out = tilemap.map;
 
     // Extract the level data into a tilemap
-    for(uint8_t i = 0; i < level.width * level.height; i++)
-    {
-            if (*in == floor_tile)          { *out = TILE_FLOOR;        } else
-            if (*in == wall_tile)           { *out = TILE_WALL;         } else
-            if (*in == hole_tile)           { *out = TILE_HOLE;         } else
-            if (*in == key_tile)            { *out = TILE_KEY;          } else
-            if (*in == endPortal_tile)      { *out = TILE_ENDPORTAL;    } else
-            if (*in == water_tile)          { *out = TILE_WATER;        } else
-            if (*in == endGem_tile)         { *out = TILE_ENDGEM;       } else
-            if (*in == boulder_tile)        { *out = TILE_BOULDER;      } else
-            if (*in >= tiles_fake_wall_1 && *in <= tiles_fake_wall_5) // fake walls
-            {
-                *out = TILE_WALL;
-            } else 
-            if (*in >= tiles_button_1 && *in <= tiles_button_5) // sticky buttons
-            {
-                *out = TILE_STICKYBUTTON;
-            } else
-            if (*in >= tiles_up_ladder_1 && *in <= tiles_up_ladder_5) // up ladders
-            {
-                *out = TILE_UP_LADDER;
-            } else
-            if (*in >= tiles_down_ladder_1 && *in <= tiles_down_ladder_5) // down ladders
-            {
-                *out = TILE_DOWN_LADDER;
-            } else 
-            if (*in == tiles_chest_boulder || *in == tiles_chest_endGem) // chests
-            {
-                *out = TILE_CHEST;
-            } else
-            {
-                free(tilemap.map);
-                handle_error("Invalid level data");
-            }
-
-           in++;
-           out++;                     
-    }
+    extract_level_data(in, out);
 
     // starting values
     game.mapPos.x = level.map_start.x;
@@ -153,19 +183,76 @@ void extract_level(void)
 
     game.numKeys = 0;
     game.hasEndGem = false;
+    game.hasWonLevel = false;
+
+   config_tilemap_globals(level.draw_width, level.draw_height);
 }
 
-void setup_tilemap(void)
+static void extract_level_data(tiles_t* in, uint8_t* out)
+{
+    for(uint8_t i = 0; i < tilemap.width * tilemap.height; i++)
+    {
+        if (*in == floor_tile)          { *out = TILE_FLOOR;        } else
+        if (*in == wall_tile)           { *out = TILE_WALL;         } else
+        if (*in == hole_tile)           { *out = TILE_HOLE;         } else
+        if (*in == key_tile)            { *out = TILE_KEY;          } else
+        if (*in == endPortal_tile)      { *out = TILE_ENDPORTAL;    } else
+        if (*in == water_tile)          { *out = TILE_WATER;        } else
+        if (*in == endGem_tile)         { *out = TILE_ENDGEM;       } else
+        if (*in == boulder_tile)        { *out = TILE_BOULDER;      } else
+        if (*in >= tiles_fake_wall_1 && *in <= tiles_fake_wall_5) // fake walls
+        {
+            *out = TILE_WALL;
+        } else 
+        if (*in >= tiles_button_1 && *in <= tiles_button_5) // sticky buttons
+        {
+            *out = TILE_STICKYBUTTON;
+        } else
+        if (*in >= tiles_up_ladder_1 && *in <= tiles_up_ladder_5) // up ladders
+        {
+            *out = TILE_UP_LADDER;
+        } else
+        if (*in >= tiles_down_ladder_1 && *in <= tiles_down_ladder_5) // down ladders
+        {
+            *out = TILE_DOWN_LADDER;
+        } else 
+        if (*in == tiles_chest_boulder || *in == tiles_chest_endGem) // chests
+        {
+            *out = TILE_CHEST;
+        } else
+        {
+            free(tilemap.map);
+            handle_error("Invalid level data");
+        }
+
+        in++;
+        out++;                     
+    }
+}
+
+static void config_tilemap_globals(uint16_t draw_width, uint8_t draw_height)
+{
+    // various variables I use repeatedly
+    tilemap.draw_width = draw_width;
+    tilemap.draw_height = draw_height;
+
+    tilemap_draw_width_px = TILE_WIDTH * draw_width;
+    tilemap_draw_height_px = TILE_HEIGHT * draw_height;
+
+    // put space between the tilemap and the border of the lcd screen
+    uint8_t offset = (LCD_HEIGHT - tilemap_draw_height_px) / 2;
+
+    tilemap.y_loc = LCD_HEIGHT - tilemap_draw_height_px - offset;
+    tilemap.x_loc = LCD_WIDTH - tilemap_draw_width_px - offset;
+}
+
+void setup_tilemap_constants(void)
 {
     tilemap.tiles = tileset_tiles;
     tilemap.type_width = gfx_tile_32_pixel;
     tilemap.type_height = gfx_tile_32_pixel;
     tilemap.tile_height = TILE_HEIGHT;
     tilemap.tile_width = TILE_WIDTH;
-    tilemap.draw_height = TILEMAP_DRAW_HEIGHT;
-    tilemap.draw_width = TILEMAP_DRAW_WIDTH;
-    tilemap.y_loc = TILEMAP_START_DRAW_Y;
-    tilemap.x_loc = TILEMAP_START_DRAW_X;
 
     // initialize to make some things work properly
     tilemap.height = 0;

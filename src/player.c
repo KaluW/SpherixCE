@@ -1,9 +1,13 @@
+#include <stdbool.h>
 #include <graphx.h>
+#include <tice.h>
 
 #include "defines.h"
 #include "images.h"
 #include "player.h"
 #include "tile_handlers.h"
+
+static bool isLegalMove(void);
 
 void handle_keypad(void)
 {
@@ -13,27 +17,28 @@ void handle_keypad(void)
 
     kb_Scan();
 
-    keypad->dir_press = kb_Data[7]; // directions offset - up, down, left, right
+    keypad->dir_press = kb_Data[7];
 
-    keypad->allow_press = (keypad->dir_press && !keypad->prev_press) ? true : false;
+    keypad->allow_down_press = (!keypad->prev_press) ? true : false;
 
+    keypad->pressed_down = (keypad->dir_press) ? true : false;
+    
     keypad->pressed_2nd = (kb_Data[1] & kb_2nd);
     keypad->pressed_Alpha = (kb_Data[2] & kb_Alpha);
-    keypad->pressed_Clear = (kb_Data[6] & kb_Clear); // exit
+    
+    keypad->pressed_Clear = (kb_Data[6] & kb_Clear);
 }
 
 void update_player(void)
 {
-    if(!player.keypad.allow_press) return;
-
     uint8_t* map_x = &game.mapPos.x;
     uint8_t* map_y = &game.mapPos.y;
 
     uint8_t right_bound = tilemap.width;
     uint8_t bottom_bound = tilemap.height;
 
-    uint8_t screen_center_x = TILEMAP_DRAW_WIDTH / 2;
-    uint8_t screen_center_y = TILEMAP_DRAW_HEIGHT / 2;
+    uint8_t screen_center_x = tilemap.draw_width / 2;
+    uint8_t screen_center_y = tilemap.draw_height / 2;
 
     uint8_t* player_x = &player.pos.x;
     uint8_t* player_y = &player.pos.y;
@@ -49,7 +54,7 @@ void update_player(void)
             (*player_x)--;
 
             // scroll the map
-            if (*map_x && *player_x - *map_x <= screen_center_x)
+            if (*map_x && *player_x - *map_x < screen_center_x)
             {
                 (*map_x)--;
             }
@@ -62,7 +67,7 @@ void update_player(void)
 
             (*player_x)++;
 
-            if (*map_x + TILEMAP_DRAW_WIDTH < right_bound && *player_x - *map_x >= screen_center_x)
+            if (*map_x + tilemap.draw_width < right_bound && *player_x - *map_x > screen_center_x)
             {
                 (*map_x)++;
             }
@@ -75,7 +80,7 @@ void update_player(void)
 
             (*player_y)--;
 
-            if (*map_y && *player_y - *map_y <= screen_center_y)
+            if (*map_y && *player_y - *map_y < screen_center_y)
             {
                 (*map_y)--;
             }
@@ -88,7 +93,7 @@ void update_player(void)
 
             (*player_y)++;
 
-            if (*map_y + TILEMAP_DRAW_HEIGHT < bottom_bound && *player_y - *map_y >= screen_center_y)
+            if (*map_y + tilemap.draw_height < bottom_bound && *player_y - *map_y > screen_center_y)
             {
                 (*map_y)++;
             }
@@ -100,10 +105,10 @@ void update_player(void)
     }
 }
 
-bool isLegalMove(void)
+static bool isLegalMove(void)
 {
-    uint16_t test_x = _test_pos_x(player.pos.x);
-    uint8_t test_y = _test_pos_y(player.pos.y);
+    uint16_t test_x = test_pos_x(player.pos.x);
+    uint8_t test_y = test_pos_y(player.pos.y);
 
     tiles_t test_tile = game.enum_map[test_y * tilemap.width + test_x];
 

@@ -12,15 +12,9 @@ typedef struct {
     uint16_t index;
 } this_t;
 
-uint8_t _test_pos_x(uint8_t x);
-uint8_t _test_pos_y(uint8_t y);
+uint8_t test_pos_x(uint8_t x);
+uint8_t test_pos_y(uint8_t y);
 
 void handle_tile_events(void);
-
-void handle_boulder(const this_t* this);
-void handle_chest(const this_t* this);
-void handle_endGem(const this_t* this);
-void handle_key(const this_t* this);
-void handle_endPortal(void);
 
 #endif

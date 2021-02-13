@@ -39,9 +39,10 @@ void extract_sprites(void)
     sprite_x_mark = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
     spr_ptr += 258;
     sprite_check = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
+
     spr_ptr += 258;
     sprite_arrows[down] = gfx_ConvertMallocRLETSprite((gfx_sprite_t*)spr_ptr);
-
+    
     gfx_RotateSpriteCC((gfx_sprite_t*)spr_ptr, spr_ptr0);
     sprite_arrows[right] = gfx_ConvertMallocRLETSprite(spr_ptr0);
 

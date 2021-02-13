@@ -1,12 +1,20 @@
 #include <graphx.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "defines.h"
 #include "images.h"
 #include "player.h"
 #include "tile_handlers.h"
 
-uint8_t _test_pos_x(uint8_t x)
+static void handle_boulder(const this_t* this);
+static void handle_chest(const this_t* this);
+static void handle_endGem(const this_t* this);
+static void handle_key(const this_t* this);
+static void handle_endPortal(void);
+
+uint8_t test_pos_x(uint8_t x)
 {
     if (player.facing == left) return x - 1;
     if (player.facing == right) return x + 1;
@@ -14,7 +22,7 @@ uint8_t _test_pos_x(uint8_t x)
     return x;
 }
 
-uint8_t _test_pos_y(uint8_t y)
+uint8_t test_pos_y(uint8_t y)
 {
     if (player.facing == up) return y - 1;
     if (player.facing == down) return y + 1;
@@ -27,8 +35,8 @@ void handle_tile_events(void)
     // yah sue me
     this_t this;
 
-    this.curr.x = _test_pos_x(player.pos.x);
-    this.curr.y = _test_pos_y(player.pos.y);
+    this.curr.x = test_pos_x(player.pos.x);
+    this.curr.y = test_pos_y(player.pos.y);
 
     this.index = this.curr.y * tilemap.width + this.curr.x;
 
@@ -44,29 +52,31 @@ void handle_tile_events(void)
             handle_boulder(&this);
             break;
 
+        case TILE_KEY:
+            handle_key(&this);
+            break;
+
         case TILE_ENDGEM:
             handle_endGem(&this);
             break;
 
-        case TILE_KEY:
-            handle_key(&this);
-
         case TILE_ENDPORTAL:
             handle_endPortal();
+            break;
 
         default:
             break;
     }
 }
 
-void handle_boulder(const this_t* this)
+static void handle_boulder(const this_t* this)
 {
     // needed code logic
     if(!player.isPushingBoulder) return;
 
     // test tile boulder is moving to
-    uint8_t test_x = _test_pos_x(this->curr.x);
-    uint8_t test_y = _test_pos_y(this->curr.y);
+    uint8_t test_x = test_pos_x(this->curr.x);
+    uint8_t test_y = test_pos_y(this->curr.y);
 
     uint16_t test_index = test_y * tilemap.width + test_x;
 
@@ -92,16 +102,23 @@ void handle_boulder(const this_t* this)
     }
 }
 
-void handle_chest(const this_t* this)
+static void handle_chest(const this_t* this)
 {
-    // if action wasn't triggered or key isn't owned, return
-    if (!player.keypad.pressed_2nd || !game.numKeys) return;
+    // if action wasn't triggered, return
+    if (!player.keypad.pressed_2nd) return;
+
+    if (!game.numKeys)
+    {
+        game.cur_msg = "You need a key!";
+        return;
+    }
 
     tiles_t* tile = &game.enum_map[this->index];
 
     switch(*tile)
     {
         case tiles_chest_boulder:
+            game.cur_msg = "A boulder! Go push it around!";
             gfx_SetTileMapped(&tilemap, this->curr.x, this->curr.y, TILE_BOULDER);
             *tile = boulder_tile;
             
@@ -110,8 +127,9 @@ void handle_chest(const this_t* this)
             break;
 
         case tiles_chest_endGem:
-            gfx_SetTileMapped(&tilemap, this->curr.x, this->curr.y, TILE_ENDGEM);
-            *tile = endGem_tile;
+            handle_endGem(this);
+            game.numKeys--;
+
             break;
 
         default:
@@ -120,10 +138,12 @@ void handle_chest(const this_t* this)
  
 }
 
-void handle_endGem(const this_t* this)
+static void handle_endGem(const this_t* this)
 {
     // if action wasn't triggered, return
     if (!player.keypad.pressed_2nd) return;
+
+    game.cur_msg = "You obtained the End Gem!";
 
     gfx_SetTileMapped(&tilemap, this->curr.x, this->curr.y, TILE_FLOOR);
     game.enum_map[this->index] = floor_tile;
@@ -131,10 +151,12 @@ void handle_endGem(const this_t* this)
     game.hasEndGem = true;
 }
 
-void handle_key(const this_t* this)
+static void handle_key(const this_t* this)
 {
     // if action wasn't triggered, return
     if (!player.keypad.pressed_2nd) return;
+
+    game.cur_msg = "You obtained a key!";
 
     gfx_SetTileMapped(&tilemap, this->curr.x, this->curr.y, TILE_FLOOR);
     game.enum_map[this->index] = floor_tile;
@@ -142,10 +164,16 @@ void handle_key(const this_t* this)
     game.numKeys++;
 }
 
-void handle_endPortal(void)
+static void handle_endPortal(void)
 {
-    if (game.hasEndGem && player.keypad.pressed_2nd)
+    if(!player.keypad.pressed_2nd) return;
+
+    if (game.hasEndGem)
     {
-        handle_error("You Won!");
+        game.hasWonLevel = true;
+    } else {
+        game.cur_msg = "You need the endGem!";
     }
+
+    return;
 }
