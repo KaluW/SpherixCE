@@ -27,6 +27,8 @@ From the homescreen of the calculator, run ```Asm(prgmSPHERIX)```.
 ## Controls
 
    `arrow keys`: move player
+
+   `[2nd]`: interact with tiles
    
    `[clear]`: exit program
    
